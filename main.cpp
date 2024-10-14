@@ -31,11 +31,8 @@ void test_loadData() {
   std::cout << data_size << std::endl;
 }
 
-/* int main(int argc, char *argv[]) {
-  test_loadData();
-  return 0;
-} */
-int main() {
+int main(int argc, char *argv[]) {
+
   test_loadData();
   return 0;
 }
