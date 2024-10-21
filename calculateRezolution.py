@@ -1,7 +1,8 @@
 import subprocess
+from pathlib import Path
 
 
-def getResolution(file_name):
+def getResolution(file_name: Path):
     command = ["./build/find-rezolution", "-i", file_name]
 
     result = subprocess.run(
@@ -20,14 +21,29 @@ def getResolution(file_name):
 
     double_value = float(output_dict.get("result", 0))
     status = output_dict.get("status", "Unknown")
-    message = output_dict.get("message", "")
 
     print(f"The returned double value is: {double_value}")
-    print(f"Status: {status}")
-    print(f"Message: {message}")
+    print(f"Status: {status}\n")
+
+    return double_value
+
+
+def getAllRootFiles(folder_path: Path):
+    extension = "*.root"
+
+    root_files = list(folder_path.glob(extension))
+
+    return root_files
 
 
 if __name__ == "__main__":
 
-    file_name = "./test_data/run_500_60_4_CFD_SMOOTH_EXP_2_CFD_FRACTLIST_50_0.root"
-    getResolution(file_name)
+    folder_path = Path("./test_data")
+
+    root_files = getAllRootFiles(folder_path)
+
+    # file_name = "./test_data/run_500_60_4_CFD_SMOOTH_EXP_2_CFD_FRACTLIST_50_0.root"
+
+    for file_name in root_files:
+        print(file_name)
+        avg_res = getResolution(file_name)
