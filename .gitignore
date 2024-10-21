@@ -10,5 +10,3 @@ build/*
 !build/.gitkeep
 .cache
 __pycache__/
-test_data/
-csv_data/
