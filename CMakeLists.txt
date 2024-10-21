@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{ROOTSYS}/ect/cmake")
-find_package(ROOT 6.30 REQUIRED COMPONENTS RIO Net RHTTP)
+find_package(ROOT 6.30 REQUIRED COMPONENTS RIO Net RHTTP Spectrum)
 include(${ROOT_USE_FILE})
 
 
@@ -37,3 +37,6 @@ add_library(${LIB_NAME} SHARED ${sources} ${headers})
 target_link_libraries(${LIB_NAME} ${ROOT_LIBRARIES})
 add_executable(${PROJECT_NAME} main.cpp ${headers})
 target_link_libraries(${PROJECT_NAME} ${LIB_NAME})
+
+add_executable(test_c test_classes.cpp ${headers})
+target_link_libraries(test_c ${LIB_NAME})
