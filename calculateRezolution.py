@@ -1,5 +1,9 @@
 import subprocess
 from pathlib import Path
+import yaml
+import itertools
+import numpy as np
+import pandas as pd
 
 
 def getResolution(file_name: Path):
@@ -36,14 +40,82 @@ def getAllRootFiles(folder_path: Path):
     return root_files
 
 
+def findFilesInFolder(folder_path: Path, param_file: Path, missing_files_txt: str):
+    with open(param_file, "r") as file:
+        config = yaml.safe_load(file)
+
+    param_values = {}
+
+    for param, settings in config.items():
+
+        if (
+            isinstance(settings, dict)
+            and "min" in settings
+            and "max" in settings
+            and "step" in settings
+        ):
+
+            param_values[param] = np.arange(
+                settings["min"], settings["max"] + settings["step"], settings["step"]
+            )
+        else:
+
+            param_values[param] = settings
+
+    combinations = list(itertools.product(*param_values.values()))
+
+    files_list = []
+    used_combinations = []
+    missing_files = []
+
+    for combination in combinations:
+
+        filename = f"run_" + "_".join(map(str, combination)) + "_0.root"
+
+        file_path = folder_path / filename
+
+        if file_path.exists():
+            files_list.append(file_path)
+            used_combinations.append(combination)
+        else:
+            missing_files.append(filename)
+
+    if missing_files:
+        with open(missing_files_txt, "w") as f:
+            for missing_file in missing_files:
+                f.write(missing_file + "\n")
+
+    return (files_list, used_combinations)
+
+
+def save_results_to_csv(combinations, results, param_names, output_file):
+    df = pd.DataFrame(combinations, columns=param_names)
+    df["Result"] = results
+    df.to_csv(output_file, index=False)
+
+
 if __name__ == "__main__":
 
     folder_path = Path("./test_data")
 
-    root_files = getAllRootFiles(folder_path)
-
+    # root_files = getAllRootFiles(folder_path)
     # file_name = "./test_data/run_500_60_4_CFD_SMOOTH_EXP_2_CFD_FRACTLIST_50_0.root"
 
+    root_files, used_combinations = findFilesInFolder(
+        folder_path, Path("python_params.yaml"), "output/missing_files.txt"
+    )
+
+    results = []
+
     for file_name in root_files:
-        print(file_name)
+        print(f"Processing file: {file_name}")
         avg_res = getResolution(file_name)
+        results.append(avg_res)
+
+    with open("python_params.yaml", "r") as file:
+        config = yaml.safe_load(file)
+        param_names = list(config.keys())
+
+    save_results_to_csv(
+        used_combinations, results, param_names, "output/results_sci.csv"
+    )

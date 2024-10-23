@@ -1,0 +1,29 @@
+ch_gate:
+  min: 500
+  max: 600
+  step: 50
+
+ch_gateshort:
+  min: 60
+  max: 180
+  step: 20
+
+ch_cfd_delay:
+  min: 2
+  max: 10
+  step: 2
+
+ch_cfd_smoothexp:
+  - CFD_SMOOTH_EXP_1
+  - CFD_SMOOTH_EXP_2
+  - CFD_SMOOTH_EXP_4
+  - CFD_SMOOTH_EXP_8
+  - CFD_SMOOTH_EXP_16
+
+ch_cfd_fraction:
+  - CFD_FRACTLIST_25
+  - CFD_FRACTLIST_50
+  - CFD_FRACTLIST_75
+  - CFD_FRACTLIST_100
+
+
