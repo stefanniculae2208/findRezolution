@@ -24,13 +24,28 @@ def getResolution(file_name: Path):
         key, value = line.split(":", 1)
         output_dict[key.strip()] = value.strip()
 
-    double_value = float(output_dict.get("result", 0))
+    avg_res = float(output_dict.get("result", 0))
     status = output_dict.get("status", "Unknown")
 
-    print(f"The returned double value is: {double_value}")
+    print(f"The returned double value is: {avg_res}")
     print(f"Status: {status}\n")
 
-    return double_value
+    resolutions_str = output_dict.get("resolutions", "")
+    resolutions = []
+    if resolutions_str:
+        for pair in resolutions_str.split(";"):
+            if pair:
+                channel, res_value = pair.split(":")
+                resolutions.append((int(channel), float(res_value)))
+
+    if resolutions:
+        print("Resolutions (Channel: Value):")
+        for channel, value in resolutions:
+            print(f"Channel {channel}: {value}")
+    else:
+        print("No resolutions found.")
+
+    return avg_res, resolutions
 
 
 def getAllRootFiles(folder_path: Path):
@@ -90,8 +105,20 @@ def findFilesInFolder(folder_path: Path, param_file: Path, missing_files_txt: st
 
 
 def save_results_to_csv(combinations, results, param_names, output_file):
+
+    double_values = [res[0] for res in results]
+    resolutions = [res[1] for res in results]
+    all_channels = sorted(set(channel for res in resolutions for channel, _ in res))
+
     df = pd.DataFrame(combinations, columns=param_names)
-    df["Result"] = results
+
+    for channel in all_channels:
+        df[f"Channel_{channel}"] = [
+            next((value for ch, value in res if ch == channel), None)
+            for res in resolutions
+        ]
+    df["Result"] = double_values
+
     df.to_csv(output_file, index=False)
 
 
@@ -122,8 +149,8 @@ if __name__ == "__main__":
 
     for file_name in root_files:
         print(f"Processing file: {file_name}")
-        avg_res = getResolution(file_name)
-        results.append(avg_res)
+        result = getResolution(file_name)
+        results.append(result)
 
     with open("python_params.yaml", "r") as file:
         config = yaml.safe_load(file)
@@ -133,5 +160,6 @@ if __name__ == "__main__":
         used_combinations, results, param_names, "output/results_sci.csv"
     )
 
-    print(f"Min value is {np.min(results)}")
-    print(f"Max value is {np.max(results)}")
+    averages = [res[0] for res in results]
+    print(f"Min value is {np.min(averages)}")
+    print(f"Max value is {np.max(averages)}")

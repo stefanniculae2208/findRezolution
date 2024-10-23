@@ -54,9 +54,15 @@ void returnRes(std::string data_file, bool opt_smooth = false) {
   rez_calculator.analyzeSpectrum(opt_smooth);
 
   double avg_res = rez_calculator.returnAvgRes();
+  auto res_vec = rez_calculator.returnResVec();
 
   std::cout << "status:Success\n";
   std::cout << "result:" << avg_res << "\n";
+
+  std::cout << "resolutions:";
+  for (const auto &res : res_vec) {
+    std::cout << res.first << ":" << res.second << ";";
+  }
 
   gROOT->SetBatch(kFALSE);
 }

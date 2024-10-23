@@ -24,6 +24,8 @@ public:
 
   double returnAvgRes() const;
 
+  std::vector<std::pair<int, double>> returnResVec() const;
+
 private:
   std::vector<TSmallEventData> m_data_vec;
   std::vector<uint8_t> m_unique_channels;
@@ -38,12 +40,14 @@ private:
   TH1F *m_fit_hist = nullptr;
 
   double m_avg_res = 0;
+  std::vector<std::pair<int, double>> m_resolutions;
   int m_peaks_count = 0;
 
   void formHistograms();
   void smoothHistogram();
   void extractBg();
-  void searchForPeaks(TH1F *histo, Double_t DEFAULT_GAUSSIAN_SPREAD);
+  void searchForPeaks(TH1F *histo, Double_t DEFAULT_GAUSSIAN_SPREAD,
+                      int channel_nr);
 };
 
 #endif

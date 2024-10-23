@@ -107,7 +107,8 @@ void calculateRezolution::extractBg() {
 }
 
 void calculateRezolution::searchForPeaks(TH1F *histo,
-                                         Double_t DEFAULT_GAUSSIAN_SPREAD) {
+                                         Double_t DEFAULT_GAUSSIAN_SPREAD,
+                                         int channel_nr) {
 
   Double_t threshold = 0.5;
   Double_t sigma = 30.5;
@@ -127,9 +128,10 @@ void calculateRezolution::searchForPeaks(TH1F *histo,
 
     Double_t mean = gaussian->GetParameter(1);
     Double_t sigma = gaussian->GetParameter(2);
-    Double_t resoluton = (2.54 * sigma / mean) * ((i == 1) ? 1117 : 1332);
+    Double_t resolution = (2.54 * sigma / mean) * ((i == 1) ? 1117 : 1332);
 
-    m_avg_res += resoluton;
+    m_resolutions.push_back({channel_nr, resolution});
+    m_avg_res += resolution;
     ++m_peaks_count;
 
     if (m_opt_verbose) {
@@ -161,7 +163,7 @@ void calculateRezolution::analyzeSpectrum(bool opt_smooth) {
       std::cout << "\nHist " << i << " channel " << m_ch_index_map[i] << "\n";
     }
 
-    searchForPeaks(histo, Co60_SPREAD);
+    searchForPeaks(histo, Co60_SPREAD, m_ch_index_map[i]);
     ++i;
   }
 
@@ -169,3 +171,7 @@ void calculateRezolution::analyzeSpectrum(bool opt_smooth) {
 }
 
 double calculateRezolution::returnAvgRes() const { return m_avg_res; }
+
+std::vector<std::pair<int, double>> calculateRezolution::returnResVec() const {
+  return m_resolutions;
+}
