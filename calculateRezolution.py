@@ -119,3 +119,6 @@ if __name__ == "__main__":
     save_results_to_csv(
         used_combinations, results, param_names, "output/results_sci.csv"
     )
+
+    print(f"Min value is {np.min(results)}")
+    print(f"Max value is {np.max(results)}")
