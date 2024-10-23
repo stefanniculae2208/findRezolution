@@ -108,15 +108,23 @@ def save_results_to_csv(combinations, results, param_names, output_file):
 
     double_values = [res[0] for res in results]
     resolutions = [res[1] for res in results]
-    all_channels = sorted(set(channel for res in resolutions for channel, _ in res))
 
     df = pd.DataFrame(combinations, columns=param_names)
 
-    for channel in all_channels:
-        df[f"Channel_{channel}"] = [
-            next((value for ch, value in res if ch == channel), None)
-            for res in resolutions
-        ]
+    channel_occurrences = {}
+    for i, res in enumerate(resolutions):
+        for channel, value in res:
+            if channel not in channel_occurrences:
+                channel_occurrences[channel] = 0
+            else:
+                channel_occurrences[channel] += 1
+
+            col_name = f"Channel_{channel}_Val_{channel_occurrences[channel]}"
+            if col_name not in df.columns:
+                df[col_name] = None
+
+            df.at[i, col_name] = value
+
     df["Result"] = double_values
 
     df.to_csv(output_file, index=False)
