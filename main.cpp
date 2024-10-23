@@ -14,7 +14,7 @@
 #include "./include/calculateRezolution.hpp"
 #include "./include/loadData.hpp"
 
-void returnRes(std::string data_file) {
+void returnRes(std::string data_file, bool opt_smooth = false) {
 
   gROOT->SetBatch(kTRUE);
 
@@ -51,7 +51,7 @@ void returnRes(std::string data_file) {
     throw;
   }
 
-  rez_calculator.analyzeSpectrum(true);
+  rez_calculator.analyzeSpectrum(opt_smooth);
 
   double avg_res = rez_calculator.returnAvgRes();
 
@@ -64,16 +64,21 @@ void returnRes(std::string data_file) {
 int main(int argc, char *argv[]) {
 
   std::string filename;
+  bool opt_smooth = false;
 
   if (argc > 1) {
     for (auto i = 1; i < argc; ++i) {
       if (std::string(argv[i]) == "-i") {
         filename = argv[++i];
       }
+      if (std::string(argv[i]) == "--smooth") {
+
+        opt_smooth = true;
+      }
     }
 
     try {
-      returnRes(filename);
+      returnRes(filename, opt_smooth);
     } catch (const std::exception &e) {
       std::cerr << e.what();
       return -1;

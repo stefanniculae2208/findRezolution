@@ -4,6 +4,7 @@ import yaml
 import itertools
 import numpy as np
 import pandas as pd
+import argparse
 
 
 def getResolution(file_name: Path):
@@ -96,8 +97,20 @@ def save_results_to_csv(combinations, results, param_names, output_file):
 
 if __name__ == "__main__":
 
-    folder_path = Path("./test_data")
+    parser = argparse.ArgumentParser(description="Process folder path.")
+    parser.add_argument(
+        "folder_path",
+        type=str,
+        nargs="?",
+        default="./test_data",
+        help="Path to the folder to process (default: './test_data')",
+    )
+    args = parser.parse_args()
+    folder_path = Path(args.folder_path)
 
+    print(f"Folder path: {folder_path}")
+
+    # folder_path = Path("./test_data")
     # root_files = getAllRootFiles(folder_path)
     # file_name = "./test_data/run_500_60_4_CFD_SMOOTH_EXP_2_CFD_FRACTLIST_50_0.root"
 
