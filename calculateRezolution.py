@@ -111,8 +111,9 @@ def save_results_to_csv(combinations, results, param_names, output_file):
 
     df = pd.DataFrame(combinations, columns=param_names)
 
-    channel_occurrences = {}
     for i, res in enumerate(resolutions):
+        channel_occurrences = {}
+
         for channel, value in res:
             if channel not in channel_occurrences:
                 channel_occurrences[channel] = 0
