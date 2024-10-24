@@ -10,3 +10,4 @@ build/*
 !build/.gitkeep
 .cache
 __pycache__/
+output/*
