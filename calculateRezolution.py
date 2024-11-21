@@ -25,9 +25,11 @@ def getResolution(file_name: Path):
         output_dict[key.strip()] = value.strip()
 
     avg_res = float(output_dict.get("result", 0))
+    ev_count = int(output_dict.get("count", 0))
     status = output_dict.get("status", "Unknown")
 
     print(f"The returned double value is: {avg_res}")
+    print(f"The event count is {ev_count}")
     print(f"Status: {status}\n")
 
     resolutions_str = output_dict.get("resolutions", "")
@@ -45,7 +47,7 @@ def getResolution(file_name: Path):
     else:
         print("No resolutions found.")
 
-    return avg_res, resolutions
+    return avg_res, resolutions, ev_count
 
 
 def getAllRootFiles(folder_path: Path):
@@ -108,6 +110,7 @@ def save_results_to_csv(combinations, results, param_names, output_file):
 
     double_values = [res[0] for res in results]
     resolutions = [res[1] for res in results]
+    ev_count = [res[2] for res in results]
 
     df = pd.DataFrame(combinations, columns=param_names)
 
@@ -126,6 +129,7 @@ def save_results_to_csv(combinations, results, param_names, output_file):
 
             df.at[i, col_name] = value
 
+    df["Count"] = ev_count
     df["Result"] = double_values
 
     df.to_csv(output_file, index=False)
@@ -145,10 +149,6 @@ if __name__ == "__main__":
     folder_path = Path(args.folder_path)
 
     print(f"Folder path: {folder_path}")
-
-    # folder_path = Path("./test_data")
-    # root_files = getAllRootFiles(folder_path)
-    # file_name = "./test_data/run_500_60_4_CFD_SMOOTH_EXP_2_CFD_FRACTLIST_50_0.root"
 
     root_files, used_combinations = findFilesInFolder(
         folder_path, Path("python_params.yaml"), "output/missing_files.txt"

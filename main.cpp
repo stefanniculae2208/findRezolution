@@ -58,6 +58,7 @@ void returnRes(std::string data_file, bool opt_smooth = false) {
 
   std::cout << "status:Success\n";
   std::cout << "result:" << avg_res << "\n";
+  std::cout << "count:" << data_size << "\n";
 
   std::cout << "resolutions:";
   for (const auto &res : res_vec) {
