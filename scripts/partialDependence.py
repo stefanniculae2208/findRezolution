@@ -22,7 +22,6 @@ def findPartialDependence(
     for i, input_col in enumerate(input_columns):
         for j, output_col in enumerate(output_columns):
 
-            # ax = axes[i][j] if num_inputs > 1 else axes[i]
             ax = axes[i][j]
             ax.plot(
                 data[input_col].sort_values(),
