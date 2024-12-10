@@ -43,5 +43,6 @@ def findBestPeaks(filename: str, opt_print_all: bool):
 
 
 if __name__ == "__main__":
-    findBestPeaks("./output/results_all.csv", False)
-    # findBestPeaks("./output/results_smooth.csv", False)
+
+    filename = "./output/results_all.csv"
+    findBestPeaks(filename, False)
