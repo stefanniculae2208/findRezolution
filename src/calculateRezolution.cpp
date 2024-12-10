@@ -110,25 +110,31 @@ void calculateRezolution::searchForPeaks(TH1F *histo,
                                          Double_t DEFAULT_GAUSSIAN_SPREAD,
                                          int channel_nr) {
 
-  Double_t threshold = 0.5;
-  Double_t sigma = 30.5;
+  const Double_t threshold = 0.7;
+  // const Double_t sigma = 20;
 
   TSpectrum *spectrum = new TSpectrum();
-  Int_t nPeaks = spectrum->Search(histo, sigma, "", threshold);
+  Int_t nPeaks =
+      spectrum->Search(histo, DEFAULT_GAUSSIAN_SPREAD, "", threshold);
   Double_t *xPeaks = spectrum->GetPositionX();
-  Double_t *yPeaks = spectrum->GetPositionY();
+  // Double_t *yPeaks = spectrum->GetPositionY();
 
-  for (Int_t i = nPeaks - 1; i >= 0; i--) {
+  for (Int_t i = 0; i < nPeaks; ++i) {
     Double_t peakPosition = xPeaks[i];
-    Double_t fitRange = DEFAULT_GAUSSIAN_SPREAD;
+    Double_t fitRange = DEFAULT_GAUSSIAN_SPREAD * 2.0;
 
-    TF1 *gaussian = new TF1("gaus", "gaus", peakPosition - fitRange,
-                            peakPosition + fitRange);
-    histo->Fit(gaussian, "RQ");
+    TF1 *gaussian =
+        new TF1("gaus_with_bg", "[0]*exp(-0.5*((x-[1])/[2])^2) + pol1(3)",
+                peakPosition - fitRange, peakPosition + fitRange);
+    gaussian->SetParameters(histo->GetBinContent(histo->FindBin(peakPosition)),
+                            peakPosition, DEFAULT_GAUSSIAN_SPREAD, 0, 0);
+    /* gaussian->SetParNames("Amplitude", "Mean", "Sigma", "BG_Slope",
+                          "BG_Intercept"); */
+    histo->Fit(gaussian, "RQ+");
 
     Double_t mean = gaussian->GetParameter(1);
     Double_t sigma = gaussian->GetParameter(2);
-    Double_t resolution = (2.54 * sigma / mean) * ((i == 1) ? 1117 : 1332);
+    Double_t resolution = (2.355 * sigma / mean) * ((i == 0) ? 1173.2 : 1332.5);
 
     m_resolutions.push_back({channel_nr, resolution});
     m_avg_res += resolution;
@@ -136,8 +142,8 @@ void calculateRezolution::searchForPeaks(TH1F *histo,
 
     if (m_opt_verbose) {
       std::cout << "Peak " << i + 1 << ": Mean = " << mean
-                << ", Sigma = " << sigma << " / Energy resolution: "
-                << (2.54 * sigma / mean) * ((i == 1) ? 1117 : 1332) << " keV"
+                << ", Sigma = " << sigma
+                << " / Energy resolution: " << resolution << " keV"
                 << std::endl;
     }
   }
@@ -151,7 +157,7 @@ void calculateRezolution::analyzeSpectrum(bool opt_smooth) {
   }
   extractBg();
 
-  const Double_t Co60_SPREAD = 30;
+  const Double_t Co60_SPREAD = 20;
   int i = 0;
 
   m_avg_res = 0;
