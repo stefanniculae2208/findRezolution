@@ -1,5 +1,8 @@
 #include "../include/calculateRezolution.hpp"
 
+/// @brief Sets the data in the appropriate histograms.
+/// @param data_vec The data vector.
+/// @param opt_verbose Prints optional info to console.
 void calculateRezolution::setData(std::vector<TSmallEventData> data_vec,
                                   bool opt_verbose) {
 
@@ -40,6 +43,7 @@ void calculateRezolution::setData(std::vector<TSmallEventData> data_vec,
   }
 }
 
+/// @brief Forms the histograms used in the data analysis.
 void calculateRezolution::formHistograms() {
 
   int i = 0;
@@ -61,6 +65,7 @@ void calculateRezolution::formHistograms() {
   }
 }
 
+/// @brief Optional smoothing using rolling average.
 void calculateRezolution::smoothHistogram() {
 
   const int smoothingWindow = 8;
@@ -93,6 +98,7 @@ void calculateRezolution::smoothHistogram() {
   }
 }
 
+/// @brief Uses TSpectrum to extract the background.
 void calculateRezolution::extractBg() {
 
   const Int_t iterations = 20;
@@ -106,6 +112,11 @@ void calculateRezolution::extractBg() {
   }
 }
 
+/// @brief Searches for peaks in the signal and calculates the resolution.
+/// @param histo The histogram being analysed.
+/// @param DEFAULT_GAUSSIAN_SPREAD A constant. I forgot what this meant
+/// honestlly.
+/// @param channel_nr The channel to which the signal belongs to.
 void calculateRezolution::searchForPeaks(TH1F *histo,
                                          Double_t DEFAULT_GAUSSIAN_SPREAD,
                                          int channel_nr) {
@@ -149,6 +160,8 @@ void calculateRezolution::searchForPeaks(TH1F *histo,
   }
 }
 
+/// @brief
+/// @param opt_smooth
 void calculateRezolution::analyzeSpectrum(bool opt_smooth) {
 
   formHistograms();
@@ -176,8 +189,14 @@ void calculateRezolution::analyzeSpectrum(bool opt_smooth) {
   m_avg_res /= m_peaks_count;
 }
 
+/// @brief Returns the value of the average resolution calculated across all of
+/// the detected peaks.
+/// @return
 double calculateRezolution::returnAvgRes() const { return m_avg_res; }
 
+/// @brief Returns a vector containing a pair of values that represent the
+/// channel number and the value of the resolution for that channel.
+/// @return
 std::vector<std::pair<int, double>> calculateRezolution::returnResVec() const {
   return m_resolutions;
 }

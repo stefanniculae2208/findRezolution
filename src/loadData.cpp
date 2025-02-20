@@ -42,7 +42,7 @@ void loadData::openFile() {
 }
 
 /**
- * @brief Reads the tree from the file.
+ * @brief Reads the tree from the file and sets the branch adresses.
  */
 void loadData::openTree() {
 
@@ -72,6 +72,9 @@ void loadData::openTree() {
   }
 }
 
+/**
+ * @brief Reads the data from the tree and saves it in the data vector.
+ */
 void loadData::readData() {
 
   if (m_rootfile->IsZombie()) {

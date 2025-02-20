@@ -14,6 +14,12 @@
 #include "./include/calculateRezolution.hpp"
 #include "./include/loadData.hpp"
 
+/// @brief This function works by printing the results to console, which will
+/// then be interpreted by the python script that will run this executable
+/// unsing a dictionary.
+/// @param data_file The '.root' file containin the data.
+/// @param opt_smooth Enable optional smoothing. It seems to be useless for the
+/// purpose of this program, but I will leave it here just in case.
 void returnRes(std::string data_file, bool opt_smooth = false) {
 
   gROOT->SetBatch(kTRUE);
